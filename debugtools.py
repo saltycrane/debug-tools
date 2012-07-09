@@ -46,6 +46,22 @@ def pvar(expression):
         frame = sys._getframe(1)
         globals = frame.f_globals
         locals = frame.f_locals
+        result = eval('%s' % expression, globals, locals)
+        _color_print('\n>>> %s (%s:%s):' % (expression,
+                                            frame.f_code.co_filename,
+                                            frame.f_lineno), 'pvar1')
+        if not isinstance(result, basestring):
+            result = pformat(result)
+        _color_print(result, 'pvar2')
+
+
+def pstr(expression):
+    """print eval('str(<expression>)')
+    """
+    if enabled:
+        frame = sys._getframe(1)
+        globals = frame.f_globals
+        locals = frame.f_locals
         result = eval('str(%s)' % expression, globals, locals)
         _color_print('>>> %s (%s:%s):' % (expression,
                                           frame.f_code.co_filename,
