@@ -16,6 +16,7 @@ def _color_print(msg, type):
         'pvar1': term.yellow,
         'pvar2': term.white,
         'pfunc': term.green,
+        'pstack': term.green,
         'enter': term.green,
         'exit': term.green,
         'normal': term.normal,
@@ -39,7 +40,15 @@ def pfunc():
         _color_print(msg, 'pfunc')
 
 
-def pvar(expression):
+def pstack():
+    '''Print the parent function name'''
+    if enabled:
+        for frame in inspect.stack():
+            msg = '%s:%d %s' % (frame[1], frame[2], frame[3])
+            _color_print(msg, 'pstack')
+
+
+def pvar(expression, format=None):
     """print eval('str(<expression>)')
     """
     if enabled:
@@ -52,7 +61,31 @@ def pvar(expression):
                                             frame.f_lineno), 'pvar1')
         if not isinstance(result, basestring):
             result = pformat(result)
+        if format == 'xml':
+            result = _format_xml(result)
         _color_print(result, 'pvar2')
+
+
+def pxml(expression):
+    # TODO: DRY. same as pvar above but can't call pvar because of use of locals
+    if enabled:
+        frame = sys._getframe(1)
+        globals = frame.f_globals
+        locals = frame.f_locals
+        result = eval('%s' % expression, globals, locals)
+        _color_print('\n>>> %s (%s:%s):' % (expression,
+                                            frame.f_code.co_filename,
+                                            frame.f_lineno), 'pvar1')
+        result = _format_xml(result)
+        _color_print(result, 'pvar2')
+
+
+def _format_xml(s):
+    import re
+    import xml.dom.minidom
+    s = xml.dom.minidom.parseString(s).toprettyxml(indent='  ')
+    regex = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
+    return regex.sub('>\g<1></', s)
 
 
 def pstr(expression):
