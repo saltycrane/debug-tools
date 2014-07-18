@@ -76,7 +76,10 @@ def pxml(expression):
         _color_print('\n>>> %s (%s:%s):' % (expression,
                                             frame.f_code.co_filename,
                                             frame.f_lineno), 'pvar1')
-        result = _format_xml(result)
+        if isinstance(result, basestring):
+            result = _format_xml(result)
+        else:
+            result = pformat(result)
         _color_print(result, 'pvar2')
 
 
