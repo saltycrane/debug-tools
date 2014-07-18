@@ -83,7 +83,9 @@ def pxml(expression):
 def _format_xml(s):
     import re
     import xml.dom.minidom
-    s = xml.dom.minidom.parseString(s).toprettyxml(indent='  ')
+    s = unicode(s).encode("utf-8")
+    s = xml.dom.minidom.parseString(s)
+    s = s.toprettyxml(indent='  ')
     regex = re.compile('>\n\s+([^<>\s].*?)\n\s+</', re.DOTALL)
     return regex.sub('>\g<1></', s)
 
