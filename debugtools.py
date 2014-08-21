@@ -12,7 +12,7 @@ enabled = True
 def _color_print(msg, type):
     term = Terminal()
     COLORS = {
-        'prt': term.yellow,
+        'prt': term.cyan,
         'pvar1': term.yellow,
         'pvar2': term.white,
         'pfunc': term.green,
