@@ -35,8 +35,20 @@ def prt(text):
 def pfunc():
     '''Print the parent function name'''
     if enabled:
+        # get the class name if there is one (assume the convention of "self" or "cls")
+        frame = sys._getframe(1)
+        locals = frame.f_locals
+        clsname = None
+        if 'cls' in locals:
+            clsname = locals['cls'].__name__
+        elif 'self' in locals:
+            clsname = locals['self'].__class__.__name__
+
         frame = inspect.stack()[1]
-        msg = '%s:%d %s' % (frame[1], frame[2], frame[3])
+        if clsname:
+            msg = '>>> %s:%d %s.%s' % (frame[1], frame[2], clsname, frame[3])
+        else:
+            msg = '>>> %s:%d %s' % (frame[1], frame[2], frame[3])
         _color_print(msg, 'pfunc')
 
 
